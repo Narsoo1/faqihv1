@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DEX Popup Menu</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo">Qih</div>
+  <button class="menu-toggle" id="menuToggle">☰</button>
+</header>
+
+<!-- MENU POPUP -->
+<div class="menu-popup" id="menuPopup">
+  <nav class="popup-content">
+
+    <!-- MENU UTAMA -->
+    <ul class="menu-list" id="mainMenu">
+      <li><a href="https://testnet.megaeth.com/" target="_blank">Faucet</a></li>
+      <li><a href="#" id="openAbout">About</a></li>
+      <li><a href="#" id="Openliquidity">Add liquidity</a></li>
+    </ul>
+<!-- WALLET BOX -->
+    <div class="wallet-box">
+      <a href="#" class="wallet-button" id="popupConnectBtn">Connect Wallet</a>
+      <div id="walletAddressDisplay" class="wallet-address clickable"></div>
+    </div>
+    
+  </nav>
+</div>
+
+<!-- DEX UI -->
+<div class="dex-container">
+
+  <!-- FROM Section -->
+  <div class="swap-section">
+    <div class="section-header">
+      <div class="section-label">FROM</div>
+      <div class="slippage-inline">
+        <div class="slippage-buttons">
+          <button>0.5%</button>
+          <button>1%</button>
+          <button>3%</button>
+        </div>
+        <input type="number" class="slippage-input" placeholder="Custom" step="0.1" />
+      </div>
+    </div>
+
+    <div class="input-box">
+      <input id="fromInput" type="number" placeholder="0.00" />
+      <div class="token-divider"></div>
+      <button class="token-select-button" id="fromTokenButton" onclick="openTokenModal('from')">
+        <img src="ETH.png" alt="ETH" width="20" height="20">
+        <span id="fromTokenName">ETH</span>
+        <span class="triangle-icon">▼</span>
+      </button>
+    </div>
+
+    <div class="balance" id="fromBalance">Balance: 0.00</div>
+    <button class="max-btn" id="maxButton">Max</button>
+  </div>
+
+  <!-- Divider + Swap Arrow in Circle -->
+  <div class="divider-container">
+    <hr class="divider" />
+    <div class="swap-icon-circle">
+      <img id="swapArrowBtn" src="qih1.svg" alt="Swap Arrow" style="cursor: pointer;" />
+    </div>
+    <hr class="divider" />
+  </div>
+
+  <!-- TO Section -->
+  <div class="swap-section">
+    <div class="section-label">TO</div>
+    <div class="input-box">
+      <input id="toInput" type="number" placeholder="0.00" />
+      <div class="token-divider"></div>
+      <button class="token-select-button" id="toTokenButton" onclick="openTokenModal('to')">
+        <img src="faqih.png" alt="QIH" width="20" height="20">
+        <span id="toTokenName">QIH</span>
+        <span class="triangle-icon">▼</span>
+      </button>
+    </div>
+    <div class="balance" id="toBalance">Balance: 0.00</div>
+  </div>
+
+  <button class="swap-button" id="mainButton" disabled>Swap</button>
+
+  <div class="gas-summary" id="gasSummary">
+    <div class="gas-summary-header" id="toggleGasDetails">
+      <div class="provider-name">Transaction Details</div>
+      <div class="gas-right">
+        <span class="gas-cost">≈ $0.00</span>
+        <span class="arrow-icon" id="arrowIcon">▼</span>
+      </div>
+    </div>
+    <div class="gas-summary-details" id="gasDetails">
+      <div class="detail-row"><span>Rate</span><span id="rateValue">1 — = 0.0000 —</span></div>
+      <div class="detail-row"><span>Min Output Value</span><span id="minOutput">0.00000000 —</span></div>
+      <div class="detail-row"><span>Slippage Tolerance</span><span>0.0%</span></div>
+      <div class="detail-row"><span>Price Impact</span><span>0.00%</span></div>
+    </div>
+  </div>
+
+  <!-- Select Token Modal -->
+  <div class="select-token-modal" id="selectTokenModal">
+    <div class="select-token-header">
+      <span>Select Token</span>
+      <button class="close-token-modal" onclick="toggleTokenModal()">×</button>
+    </div>
+
+    <div class="search-token">
+      <input type="text" id="tokenSearchInput" placeholder="Search name or paste address..." />
+    </div>
+
+    <!-- TOKEN DEFAULT -->
+    <div class="popular-tokens no-box" id="default-token-list">
+      <div class="token-label" onclick="selectToken('ETH', 'ETH.PNG', '0x02571ceFf12Ea1cc86F9B10beD9871464eda3316')">
+        <img src="ETH.png" /><span>ETH</span>
+      </div>
+      <div class="token-label" onclick="selectToken('QIH', 'usdt.png', '0x07fED9DD0CE61094f5C8eDA54a2dA8cDF7A4CE14')">
+        <img src="usdt.png" /><span>QIHV1</span>
+      </div>
+      <div class="token-label" onclick="selectToken('QIH', 'faqih.png', '0xDD176F0D9C66E6773fb1b041502F5E7aA3Ff7e5E')">
+        <img src="faqih.png" /><span>QIH</span>
+      </div>
+    </div>
+
+    <!-- TOKEN CUSTOM HASIL PENCARIAN -->
+    <div class="popular-tokens no-box" id="custom-token-list"></div>
+  </div>
+</div>
+
+<!-- ABOUT POPUP -->
+<div class="about-popup" id="aboutPopup">
+  <div class="about-content" id="aboutContent">
+    <button class="close-about" id="closeAbout">✖</button>
+    <div class="about-slider" id="aboutSlider">
+      <div class="about-slide active">
+        <h2>Visi & Mission</h2>
+        <hr />
+        <p>The purpose of this Dex is to test the speed of the MEGA ETH network</p>
+      </div>
+      <div class="about-slide">
+        <h2>Superiority</h2>
+        <hr />
+        <p>fast&clear</p>
+      </div>
+      <div class="about-slide">
+        <h2>introduction</h2>
+        <hr />
+        <p>don't use mainnet network</p>
+      </div>
+    </div>
+    <div class="about-nav">
+      <button id="prevSlide" class="slide-btn">←</button>
+      <button id="nextSlide" class="slide-btn">→</button>
+    </div>
+  </div>
+</div>
+<!-- WALLET SELECTOR MODAL -->
+<div class="wallet-modal" id="walletModal">
+  <div class="wallet-modal-content">
+     <div id="modalToastContainer"></div>
+    <h3>Pilih Wallet</h3>
+    <button class="wallet-option" onclick="connectMetaMask()">
+      <img src="metamask.jpg" alt="MetaMask" />
+      <span>MetaMask</span>
+    </button>
+    
+    <button class="wallet-option" onclick="connectOKX()">
+      <img src="okx.jpg" alt="OKX" />
+      <span>OKX Wallet</span>
+    </button>
+    
+    <button class="wallet-option" onclick="connectBitget()">
+      <img src="bitget.jpg" alt="Bitget" />
+      <span>Bitget Wallet</span>
+    </button>
+    <button class="wallet-option cancel" onclick="closeWalletModal()">close</button>
+  </div>
+</div>
+<!-- Popup Wrong Network -->
+<div id="network-popup" class="popup-overlay hidden">
+  <div class="popup-box">
+    <h2>Wrong Network</h2>
+    <p>Please switch to MegaETH Testnet.</p>
+    <button id="switch-network">Switch Network</button>
+  </div>
+</div>
+<!--show-->
+<div id="toast-container"></div>
+
+<!--js-->
+
+<script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+ <script src="web3.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
