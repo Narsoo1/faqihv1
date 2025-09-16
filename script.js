@@ -1,7 +1,3 @@
-
-// ============================
-// GLOBAL STATE & ELEMENT
-// ============================
 let connectedAccount = null;
 let selectedFromToken = null;
 let selectedToToken = null;
@@ -12,18 +8,12 @@ const connectBtn = document.getElementById("popupConnectBtn");
 const walletAddressDisplay = document.getElementById("walletAddressDisplay");
 swapButton.disabled = true;
 
-// ============================
-// TOKENS CONFIG
-// ============================
 const TOKENS = {
   ETH: { address: "0x02571ceFf12Ea1cc86F9B10beD9871464eda3316", symbol: "ETH", decimals: 18, icon: "ETH.png" },
-  QIHV1: { address: "0x07fED9DD0CE61094f5C8eDA54a2dA8cDF7A4CE14", symbol: "QIHV1", decimals: 18, icon: "usdt.png" },
+  USDT: { address: "0x07fED9DD0CE61094f5C8eDA54a2dA8cDF7A4CE14", symbol: "USDT", decimals: 18, icon: "usdt.png" },
   QIH: { address: "0xDD176F0D9C66E6773fb1b041502F5E7aA3Ff7e5E", symbol: "QIH", decimals: 18, icon: "faqih.png" }
 };
 
-// ============================
-// HELPER UI
-// ============================
 function shortenAddress(addr) { return addr.slice(0,6)+"..."+addr.slice(-4); }
 
 function showToast(message, type="info", inModal=false) {
@@ -37,18 +27,13 @@ function showToast(message, type="info", inModal=false) {
   setTimeout(()=>{ toast.classList.remove("show"); setTimeout(()=>container.removeChild(toast),300); },3000);
 }
 
-// ============================
-// UI CONNECT/DISCONNECT
-// ============================
 function updateUIConnected(address) {
   // Update hanya connect button
   connectBtn.innerText = shortenAddress(address);
   connectBtn.classList.add("connected");
   
-  // Sembunyikan walletAddressDisplay
   walletAddressDisplay.style.display = "none";
   
-  // Aktifkan tombol swap
   swapButton.disabled = false;
 }
 
@@ -66,9 +51,6 @@ function updateUIDisconnected() {
   selectedToToken = null;
 }
 
-// ============================
-// WALLET CONNECT / DISCONNECT
-// ============================
 const walletModal = document.getElementById("walletModal");
 const closeBtn = document.querySelector(".wallet-option.cancel");
 
@@ -88,11 +70,8 @@ function disconnectWallet(){
   updateUIDisconnected();
 }
 
-// ============================
-// WALLET CONNECT FUNCTIONS
-// ============================
 async function connectWalletAndUpdateUI(provider){
-  const acc = await connectWallet(provider); // harus ada fungsi connectWallet
+  const acc = await connectWallet(provider);
   if(acc){
     connectedAccount = acc;
     updateUIConnected(acc);
@@ -104,9 +83,6 @@ async function connectMetaMask(){ await connectWalletAndUpdateUI("metamask"); }
 async function connectOKX(){ await connectWalletAndUpdateUI("okx"); }
 async function connectBitget(){ await connectWalletAndUpdateUI("bitget"); }
 
-// ============================
-// FETCH BALANCE
-// ============================
 async function fetchBalance(token){
   if(!connectedAccount) return 0;
   try{
@@ -134,9 +110,6 @@ async function updateBalances(){
   }
 }
 
-// ============================
-// SELECT TOKEN MODAL
-// ============================
 const selectTokenModal = document.getElementById("selectTokenModal");
 const tokenSearchInput = document.getElementById("tokenSearchInput");
 const customTokenList = document.getElementById("custom-token-list");
@@ -186,11 +159,7 @@ tokenSearchInput.addEventListener("input",()=>{
   });
 });
 
-// ============================
-// SWAP ARROW (fallback default token)
-// ============================
 swapArrowBtn.addEventListener("click", async () => {
-  // Pakai default kalau belum dipilih
   if(!selectedFromToken) selectedFromToken = TOKENS.ETH;
   if(!selectedToToken) selectedToToken = TOKENS.QIH;
 
@@ -201,11 +170,9 @@ swapArrowBtn.addEventListener("click", async () => {
   const fromName = document.getElementById("fromTokenName");
   const toName = document.getElementById("toTokenName");
 
-  // Swap UI
   [fromBtn.querySelector("img").src, toBtn.querySelector("img").src] = [toBtn.querySelector("img").src, fromBtn.querySelector("img").src];
   [fromName.textContent, toName.textContent] = [toName.textContent, fromName.textContent];
 
-  // Swap state
   [selectedFromToken, selectedToToken] = [selectedToToken, selectedFromToken];
 
   const fromInput = document.getElementById("fromInput");
@@ -216,9 +183,6 @@ swapArrowBtn.addEventListener("click", async () => {
   fromInput.dispatchEvent(new Event("input"));
 });
 
-// ============================
-// SWAP BUTTON (fallback default token)
-// ============================
 swapButton.addEventListener("click", async () => {
   const amount = document.getElementById("fromInput").value;
 
@@ -226,12 +190,11 @@ swapButton.addEventListener("click", async () => {
     return showToast("Masukkan jumlah valid", "error");
   }
 
-  // Fallback token kalau belum pilih
   const fromToken = selectedFromToken || TOKENS.ETH;
   const toToken = selectedToToken || TOKENS.QIH;
 
   try{
-    await swapTokens(fromToken, toToken, amount); // swapTokens harus ada
+    await swapTokens(fromToken, toToken, amount); 
     showToast("Swap berhasil!", "success");
     await updateBalances();
   } catch(err){
@@ -240,9 +203,6 @@ swapButton.addEventListener("click", async () => {
   }
 });
 
-// ============================
-// UPDATE BALANCE (fallback token)
-// ============================
 async function updateBalances() {
   if(!connectedAccount) return;
 
@@ -256,14 +216,10 @@ async function updateBalances() {
   document.getElementById("toBalance").innerText = `Balance: ${toBal.toFixed(4)} ${toToken.symbol}`;
 }
 
-// ============================  
-// MAX BUTTON (fallback default token)  
-// ============================  
 const maxBtn = document.getElementById("maxButton");  
 if(maxBtn){  
   maxBtn.addEventListener("click", async () => {  
     try {  
-      // Fallback token default kalau belum pilih  
       const fromToken = selectedFromToken || TOKENS.ETH;
 
       let bal = await fetchBalance(fromToken);
@@ -274,10 +230,10 @@ if(maxBtn){
 
       document.getElementById("fromInput").value = bal.toFixed(4);
 
-      // Update teks saldo
+
       await updateBalances();
 
-      // Trigger estimasi otomatis
+
       document.getElementById("fromInput").dispatchEvent(new Event("input"));  
 
       showToast(`Menggunakan MAX dari ${fromToken.symbol}`, "info");  
@@ -289,11 +245,176 @@ if(maxBtn){
   });  
 }
 
-// ============================
-// AUTO ESTIMASI TO INPUT
-// ============================
 document.getElementById("fromInput").addEventListener("input",async()=>{
   if(!routerContract) return;
+  const amount = document.getElementById("fromInput").value;
+  if(!amount || parseFloat(amount)<=0){ document.getElementById("toInput").value=""; return; }
+
+  const fromAddr = selectedFromToken?.address||"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+  const toAddr = selectedToToken?.address||TOKENS.QIH.address;
+  try{
+    const decimals = selectedFromToken?.decimals||18;
+    const amountBN = web3.utils.toBN(amount*(10**decimals));
+    const path = fromAddr==="0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"?[WETH_ADDRESS,toAddr]:[fromAddr,toAddr];
+    const amountsOut = await routerContract.methods.getAmountsOut(amountBN,path).call();
+    const rawOut = amountsOut[amountsOut.length-1];
+    const toDecimals = selectedToToken?.decimals||18;
+    document.getElementById("toInput").value=(rawOut/(10**toDecimals)).toFixed(6);
+  } catch(err){ console.error(err); document.getElementById("toInput").value=""; }
+});
+
+const slippageButtons = document.querySelectorAll(".slippage-buttons button");
+const slippageInput = document.querySelector(".slippage-input");
+slippageButtons.forEach(btn=>btn.addEventListener("click",()=>{
+  slippageButtons.forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  slippageInput.value=btn.textContent.replace("%","");
+}));
+slippageInput.addEventListener("input",()=>slippageButtons.forEach(b=>b.classList.remove("active")));
+
+// ============================
+// MENU POPUP
+// ============================
+const menuToggle=document.getElementById("menuToggle");
+const menuPopup=document.getElementById("menuPopup");
+menuToggle.addEventListener("click",()=>{
+  menuPopup.classList.toggle("active");
+  menuToggle.innerHTML=menuPopup.classList.contains("active")?"✖":"☰";
+});
+
+const aboutPopup=document.getElementById("aboutPopup");
+const openAbout=document.getElementById("openAbout");
+const closeAbout=document.getElementById("closeAbout");
+const aboutSlides=document.querySelectorAll(".about-slide");
+const nextSlide=document.getElementById("nextSlide");
+const prevSlide=document.getElementById("prevSlide");
+let currentSlide=0;
+openAbout.addEventListener("click",()=>aboutPopup.classList.add("active"));
+closeAbout.addEventListener("click",()=>aboutPopup.classList.remove("active"));
+function showSlide(index){ aboutSlides.forEach((s,i)=>s.classList.toggle("active",i===index)); }
+nextSlide.addEventListener("click",()=>{ currentSlide=(currentSlide+1)%aboutSlides.length; showSlide(currentSlide); });
+prevSlide.addEventListener("click",()=>{ currentSlide=(currentSlide-1+aboutSlides.length)%aboutSlides.length; showSlide(currentSlide); });
+
+const toggleGasDetails=document.getElementById("toggleGasDetails");
+const gasDetails=document.getElementById("gasDetails");
+const arrowIcon=document.getElementById("arrowIcon");
+toggleGasDetails.addEventListener("click",()=>{
+  gasDetails.classList.toggle("active");
+  arrowIcon.textContent=gasDetails.classList.contains("active")?"▲":"▼";
+});
+function showWalletToast(message, type = "info") {
+  const container = document.getElementById("modalToastContainer");
+  if (!container) return;
+  
+  const toast = document.createElement("div");
+  toast.className = `modal-toast ${type}`;
+  toast.innerText = message;
+  container.appendChild(toast);
+  
+  setTimeout(() => toast.classList.add("show"), 100);
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => container.removeChild(toast), 300);
+  }, 3000);
+}
+async function connectWalletProvider(provider) {
+  provider = provider.toLowerCase();
+  if (provider === "metamask") {
+    if (window.ethereum && window.ethereum.isMetaMask) return "MetaMask connected!";
+    else return "MetaMask not detected!";
+  }
+  else if (provider === "okx") {
+    if (window.okxwallet) return "OKX Wallet connected!";
+    else return "OKX Wallet not detected!";
+  }
+  else if (provider === "bitget") {
+    if (window.bitkeep && window.bitkeep.ethereum) return "Bitget Wallet connected!";
+    else return "Bitget Wallet not detected!";
+  }
+  else return "Wallet not detected!";
+}
+document.querySelectorAll(".wallet-option").forEach(btn => {
+  btn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const walletName = btn.querySelector("span")?.innerText.toLowerCase() || "";
+    const msg = await connectWalletProvider(walletName);
+    showWalletToast(msg, msg.toLowerCase().includes("not detected") ? "error" : "success");
+  });
+});
+function renderTokenList(tokens, container) {
+  container.innerHTML = "";
+
+  tokens.forEach(token => {
+    const div = document.createElement("div");
+    div.className = "token-label";
+    div.innerHTML = `<img src="${token.icon}" /><span>${token.symbol}</span>`;
+    div.onclick = () => selectToken(token.symbol, token.icon, token.address);
+    container.appendChild(div);
+  });
+}
+
+function openTokenModal(side) {
+  currentTokenSide = side;
+  selectTokenModal.classList.add("active");
+
+  renderTokenList(tokenList, defaultTokenListEl);
+  defaultTokenListEl.style.display = "block";
+  customTokenList.innerHTML = "";
+}
+
+tokenSearchInput.addEventListener("input", () => {
+  const value = tokenSearchInput.value.trim().toLowerCase();
+  customTokenList.innerHTML = "";
+  defaultTokenListEl.style.display = value ? "none" : "block";
+
+  if (value) {
+    const results = tokenList.filter(t =>
+      t.symbol.toLowerCase().includes(value) ||
+      t.address.toLowerCase().includes(value)
+    );
+
+    if (results.length === 0) {
+      const div = document.createElement("div");
+      div.className = "token-label not-found";
+      div.textContent = "Token tidak ditemukan";
+      customTokenList.appendChild(div);
+      return;
+    }
+
+    renderTokenList(results, customTokenList);
+  }
+});
+const popup = document.getElementById("network-popup");
+const switchBtn = document.getElementById("switch-network");
+
+switchBtn.addEventListener("click", async () => {
+  try {
+    await ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: targetChainId }]
+    });
+    popup.classList.add("hidden");
+  } catch (err) {
+    if (err.code === 4902) {
+      await ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [targetChainData]
+      });
+    } else {
+      console.error("Switch error:", err);
+    }
+  }
+});
+const inputs = document.querySelectorAll('input');
+
+  inputs.forEach(input => {
+    input.addEventListener('focus', () => {
+      document.body.classList.add('noscroll');
+    });
+    input.addEventListener('blur', () => {
+      document.body.classList.remove('noscroll');
+    });
+  });  if(!routerContract) return;
   const amount = document.getElementById("fromInput").value;
   if(!amount || parseFloat(amount)<=0){ document.getElementById("toInput").value=""; return; }
 
