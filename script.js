@@ -11,7 +11,7 @@ swapButton.disabled = true;
 const TOKENS = {
   ETH: { address: "0x02571ceFf12Ea1cc86F9B10beD9871464eda3316", symbol: "ETH", decimals: 18, icon: "ETH.png" },
   USDT: { address: "0x07fED9DD0CE61094f5C8eDA54a2dA8cDF7A4CE14", symbol: "USDT", decimals: 18, icon: "usdt.png" },
-  QIH: { address: "0xDD176F0D9C66E6773fb1b041502F5E7aA3Ff7e5E", symbol: "QIH", decimals: 18, icon: "faqih.png" }
+  QIH: { address: "0x07fED9DD0CE61094f5C8eDA54a2dA8cDF7A4CE14", symbol: "QIH", decimals: 18, icon: "faqih.png" }
 };
 
 function shortenAddress(addr) { return addr.slice(0,6)+"..."+addr.slice(-4); }
